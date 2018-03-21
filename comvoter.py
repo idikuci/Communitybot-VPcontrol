@@ -113,22 +113,22 @@ s = Steem(node=nodes)
 upvoter = Steem(node=nodes, wif=Posting_Key)
 
 # Initialize VP
-account = Account("idikuci", s)
+account = Account("comedyopenmic", s)
 VP = getactiveVP(account)
 
 while True: # Loop continuously
     while VP < MaxVP: # If VP is below MaxVP go to sleep
-        sleeptime = ( MaxVP - VP ) * (86400 / 20) # Time to sleep tile we're above the MaxVP if no further votes are made
+        sleeptime = ( MaxVP - VP + 0.01 ) * (86400 / 20) # Time to sleep til we're above the MaxVP if no further votes are made
         print(" VP = " + str(VP) + "; Sleeptime = " + str(sleeptime))
 
         time.sleep(sleeptime) # Sleep
         # Grab VP again
-        account = Account("idikuci", s)
+        account = Account("comedyopenmic", s)
         VP = getactiveVP(account)
 
     # Get oldest comment /post authored
     post_ID = getupvotecandidate(account,s)
     print("voting on old post: " , post_ID)
-    upvoter.vote(post_ID, 100, voter="idikuci")
-    time.sleep(600)
+    upvoter.vote(post_ID, 100, voter="comedyopenmic")
+#    time.sleep(600)
 
