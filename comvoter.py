@@ -80,6 +80,7 @@ def getupvotecandidate(account,s):
 
     tmpoldest = 0
     currenttime = UtcNow()
+    oldest_id = []
 
     for event in history:
        # Not really needed due to filter
@@ -94,9 +95,9 @@ def getupvotecandidate(account,s):
                         elapsedtime = currenttime - epochlastvote
                         if elapsedtime < cutofftime: # Is post in within time limit (6.5days default)
                    #         print(event)
-                            if elapsedtime > tmpoldest: # if it's the oldest we've found
-                                tmpoldest = epochlastvote
-                                oldest_id = "@" + event['author'] + "/" + event['permlink'] # get link to oldest post
+#                            if elapsedtime > tmpoldest: # if it's the oldest we've found
+#                                tmpoldest = epochlastvote
+                                oldest_id.append("@" + event['author'] + "/" + event['permlink']) # get link to posts
 
 
 
@@ -127,8 +128,20 @@ while True: # Loop continuously
         VP = getactiveVP(account)
 
     # Get oldest comment /post authored
-    post_ID = getupvotecandidate(account,s)
-    print("voting on old post: " , post_ID)
-    upvoter.vote(post_ID, 100, voter="comedyopenmic")
+    posts = getupvotecandidate(account,s)
+    for post_ID in posts:
+        try:
+            print("voting on old post: " , post_ID)
+            upvoter.vote(post_ID, 100, voter="comedyopenmic")
+            time.sleep(4) # sleep for 4 seconds make sure we don't vote too quickly
+        except:
+            print("Already voted on this one try again")
+
+        # If the VP is below desired level keep voting, else leave loop and go to sleep
+        VP = getactiveVP(account)
+        if VP < MaxVP:
+            break
+
+
 #    time.sleep(600)
 
