@@ -3,24 +3,26 @@ from piston.steem import Steem
 from piston.account import Account
 from piston.post import Post
 import datetime
+import calendar
 import time
 import json
 
 from keys import Posting_Key
 
-accountname = 'idikuci'
-#accountname = 'comedyopenmic'
+#accountname = 'idikuci'
+accountname = 'comedyopenmic'
 
-nodes = ["wss://rpc.steemviz.com", "wss://rpc.steemliberator.com", "wss://steemd.minnowsupportproject.org"]
+#nodes = ["wss://rpc.steemviz.com", "wss://rpc.steemliberator.com", "wss://steemd.minnowsupportproject.org"]
+nodes = ["wss://steemd.minnowsupportproject.org", "wss://rpc.steemliberator.com", "wss://rpc.steemviz.com"]
 pattern = '%Y-%m-%dT%H:%M:%S'
 
 
-MaxVP = 90
+MaxVP = 97
 # cut off time in seconds [ 6 days X 24 hrs X 60 mins X 60 secs = 518400 seconds]
 #cutofftime = 518400
 # cut off time in seconds [ 5.5 days X 24 hrs X 60 mins X 60 secs = 475200 seconds]
-cutofftime = 475200
-# cut off time in seconds [ 5.5 days X 24 hrs X 60 mins X 60 secs = 432000 seconds]
+# cutofftime = 475200
+# cut off time in seconds [ 5 days X 24 hrs X 60 mins X 60 secs = 432000 seconds]
 cutofftime = 432000
 
 
@@ -42,6 +44,7 @@ def getactiveVP(account):
         if(event['type'] == "vote"):
             # Make sure we are the one voting
             if(event['voter'] == account.name):
+#                epochlastvote = (calendar.timegm(time.strptime(event['timestamp'], pattern)))
                 epochlastvote = (time.mktime(time.strptime(event['timestamp'], pattern)))
                 # History2 returns the history with oldest first. Keep going until latest vote
                 tmpepochlastvote = epochlastvote
@@ -79,11 +82,12 @@ def getupvotecandidate(account,s):
     for event in history:
        # Not really needed due to filter
         if(event['type'] == 'comment'):
-            # Make sure we are the one voting
+            # Make sure we are the author
             if(event['author'] == account.name):
                 epochlastvote = (time.mktime(time.strptime(event['timestamp'], pattern)))
+#                epochlastvote = (calendar.timegm(time.strptime(event['timestamp'], pattern)))
                 elapsedtime = currenttime - epochlastvote
-                if elapsedtime < cutofftime: # Is post in within time limit (6.5days default)
+                if elapsedtime < cutofftime: # Is post in within time limit
                     identifier = "@" + event['author'] + "/" + event['permlink']
                     postid = Post(identifier,s) # Get comment info
                     for voterid in postid['active_votes']: # check if we have already voted
